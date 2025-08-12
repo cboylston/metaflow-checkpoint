@@ -634,7 +634,7 @@ class CheckpointDecorator(StepDecorator):
                 self._loaded_checkpoint_lineage,
                 self._load_policy,
             ),
-            interval=3,
+            interval=300,
         )
 
         def _wrapped_step_func(_collector_thread, *args, **kwargs):
