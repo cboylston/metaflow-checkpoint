@@ -528,10 +528,8 @@ class CheckpointDecorator(StepDecorator):
     def task_exception(
         self, exception, step_name, flow, graph, retry_count, max_user_code_retries
     ):
-        # DISABLED: Thread collection disabled for performance testing
-        # if self._collector_thread is not None:
-        #     self._collector_thread.stop()
-        pass
+        if self._collector_thread is not None:
+            self._collector_thread.stop()
 
         if self._chkptr is not None:
             _store_checkpoint_ref_as_data_artifact(flow, retry_count, self._chkptr)
@@ -636,29 +634,24 @@ class CheckpointDecorator(StepDecorator):
                 self._loaded_checkpoint_lineage,
                 self._load_policy,
             ),
-            interval=3,
+            interval=300,
         )
 
         def _wrapped_step_func(_collector_thread, *args, **kwargs):
 
-            # DISABLED: Commenting out thread start to test performance
-            # _collector_thread.start()
+            _collector_thread.start()
             try:
                 return step_func(*args, **kwargs)
             finally:
-                # DISABLED: Thread was never started
-                # _collector_thread.stop()
-                pass
+                _collector_thread.stop()
 
         return partial(_wrapped_step_func, self._collector_thread)
 
     def task_post_step(
         self, step_name, flow, graph, retry_count, max_user_code_retries
     ):
-        # DISABLED: Thread collection disabled for performance testing
-        # if self._collector_thread is not None:
-        #     self._collector_thread.stop()
-        pass
+        if self._collector_thread is not None:
+            self._collector_thread.stop()
 
         if self._chkptr is not None:
             _store_checkpoint_ref_as_data_artifact(flow, retry_count, self._chkptr)
